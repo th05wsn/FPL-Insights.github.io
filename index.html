@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FPL Insights — Who to Pick Next</title>
+<meta name="description" content="In-depth Fantasy Premier League stats — form, ICT Index, expected goals and assists, and fixture-adjusted recommendations for who to pick next.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href=assets/css/style.css>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <div class="brand">FPL<span class="dot">·</span>INSIGHTS</div>
+    <nav class="tabs" id="tabs">
+      <button data-tab="pitch" class="active">Who To Pick</button>
+      <button data-tab="table">All Stats</button>
+      <button data-tab="value">Value &amp; Differentials</button>
+      <button data-tab="fixtures">Fixtures</button>
+    </nav>
+    <div class="status-pill">
+      <span class="pulse"></span>
+      <span id="last-updated">loading data…</span>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <p class="eyebrow">Gameweek recommendation engine</p>
+      <h1>Data decides<br>who plays <span>next</span>.</h1>
+      <p class="lede">Live scoring, form, ICT Index and expected-goal data — the same underlying Opta-tracked metrics the Premier League itself publishes — ranked into one number: who's actually worth your transfer.</p>
+      <p class="source-note">Data source: the official FPL API (fantasy.premierleague.com), which surfaces Opta-derived tracking &amp; event metrics — xG, xA, xGI, xGC and ICT Index. Refreshed automatically every few hours via GitHub Actions.</p>
+    </div>
+    <div class="spotlight-card" id="spotlight">
+      <p class="loading-msg">Loading top-rated player…</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WHO TO PICK (pitch view) ============ -->
+<section class="section" id="tab-pitch">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <h2><span class="num">01</span>Recommended XI</h2>
+        <p>Top-ranked available player per slot, scored on form, expected-goal involvement per 90, ICT Index, fixture difficulty and value.</p>
+      </div>
+    </div>
+    <div class="formation-toggle" id="formation-toggle">
+      <button data-f="3-4-3" class="active">3-4-3</button>
+      <button data-f="3-5-2">3-5-2</button>
+      <button data-f="4-4-2">4-4-2</button>
+      <button data-f="4-3-3">4-3-3</button>
+      <button data-f="5-3-2">5-3-2</button>
+    </div>
+    <div class="pitch-wrap">
+      <div class="pitch-lines"></div>
+      <div class="pitch-rows" id="pitch-rows">
+        <p class="loading-msg">Building recommended XI…</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ALL STATS TABLE ============ -->
+<section class="section" id="tab-table">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <h2><span class="num">02</span>Full Player Stats</h2>
+        <p>Every player, every advanced metric. Click a column to sort.</p>
+      </div>
+    </div>
+    <div class="filters">
+      <input type="search" id="search-input" placeholder="Search player…">
+      <select id="position-filter">
+        <option value="">All positions</option>
+        <option value="GKP">Goalkeepers</option>
+        <option value="DEF">Defenders</option>
+        <option value="MID">Midfielders</option>
+        <option value="FWD">Forwards</option>
+      </select>
+      <select id="team-filter"><option value="">All teams</option></select>
+    </div>
+    <div class="table-scroll">
+      <table class="stats-table" id="stats-table">
+        <thead>
+          <tr>
+            <th data-key="name">Player</th>
+            <th data-key="position">Pos</th>
+            <th data-key="cost">£m</th>
+            <th data-key="totalPoints">Pts</th>
+            <th data-key="form">Form</th>
+            <th data-key="pointsPerGame">PPG</th>
+            <th data-key="ictIndex">ICT</th>
+            <th data-key="xG">xG</th>
+            <th data-key="xA">xA</th>
+            <th data-key="xGI90">xGI/90</th>
+            <th data-key="xGC">xGC</th>
+            <th data-key="selectedByPercent">Own %</th>
+            <th data-key="fixtureDifficulty">FDR (5)</th>
+            <th data-key="recommendationScore">Score</th>
+          </tr>
+        </thead>
+        <tbody id="table-body">
+          <tr><td colspan="14" class="loading-msg">Loading player data…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ============ VALUE / DIFFERENTIALS ============ -->
+<section class="section" id="tab-value">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <h2><span class="num">03</span>Best Value</h2>
+        <p>Highest total points banked per £1m of squad cost.</p>
+      </div>
+    </div>
+    <div class="card-row" id="value-cards">
+      <p class="loading-msg">Loading…</p>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="tab-value-2">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <h2><span class="num">04</span>Differentials</h2>
+        <p>High recommendation score, owned by fewer than 10% of managers.</p>
+      </div>
+    </div>
+    <div class="card-row" id="differential-cards">
+      <p class="loading-msg">Loading…</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FIXTURES ============ -->
+<section class="section" id="tab-fixtures">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <h2><span class="num">05</span>Fixture Difficulty</h2>
+        <p>Average difficulty rating of each club's next 5 fixtures. Lower (lime) is easier.</p>
+      </div>
+    </div>
+    <div class="fixture-grid" id="fixture-grid">
+      <p class="loading-msg">Loading fixtures…</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>Not affiliated with the Premier League, the FPL game, or Opta/Stats Perform. Player data via the public
+    <a href="https://fantasy.premierleague.com/api/bootstrap-static/" target="_blank" rel="noopener">FPL API</a>,
+    refreshed by a scheduled GitHub Action. Built as a static site — free to host on GitHub Pages.</p>
+  </div>
+</footer>
+
+<script src="assets/js/app.js"></script>
+</body>
+</html>
